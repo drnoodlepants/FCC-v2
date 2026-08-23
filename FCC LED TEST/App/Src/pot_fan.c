@@ -58,6 +58,5 @@ void PotFan_Update(PotFan_t *pf)
     pf->pot_fraction = Constrain((float)raw / adc_max, 0.0f, 1.0f);
     pf->pwm_compare = (uint32_t)(pf->pot_fraction * (float)PWM_RESOLUTION);
 
-    // TEMPORARY TEST — force 50% duty, ignore pot/ADC entirely
-    __HAL_TIM_SET_COMPARE(pf->pwm_tim, TIM_CHANNEL_3, 32767);  // half of 65535
+    __HAL_TIM_SET_COMPARE(pf->pwm_tim, TIM_CHANNEL_3, pf->pwm_compare);
 }

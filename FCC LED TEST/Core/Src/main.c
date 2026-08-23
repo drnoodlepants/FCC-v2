@@ -31,7 +31,8 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#define DEBUG_LED_PERIOD_MIN_MS   80u    // blink speed at full pot deflection
+#define DEBUG_LED_PERIOD_MAX_MS   1000u  // blink speed at pot = 0
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -53,6 +54,9 @@ TIM_HandleTypeDef htim14;
 static PotFan_t pf;
 
 static uint16_t heartbeat_counter = 0;
+
+static uint32_t debug_led_last_toggle = 0;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -65,12 +69,25 @@ static void MX_CAN2_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_TIM14_Init(void);
 /* USER CODE BEGIN PFP */
+static void DebugLED_UpdateBlink(PotFan_t *pf);
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+static void DebugLED_UpdateBlink(PotFan_t *pf)
+{
+    // Further the pot is turned, the faster the debug LED blinks.
+    uint32_t period_ms = DEBUG_LED_PERIOD_MAX_MS -
+        (uint32_t)(pf->pot_fraction * (float)(DEBUG_LED_PERIOD_MAX_MS - DEBUG_LED_PERIOD_MIN_MS));
 
+    uint32_t now = HAL_GetTick();
+    if ((now - debug_led_last_toggle) >= period_ms)
+    {
+        HAL_GPIO_TogglePin(DEBUG_LED_GPIO_Port, DEBUG_LED_Pin);
+        debug_led_last_toggle = now;
+    }
+}
 /* USER CODE END 0 */
 
 /**
@@ -139,15 +156,16 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  //PotFan_Update(&pf);
+	  PotFan_Update(&pf);
+	      DebugLED_UpdateBlink(&pf);
 
-	  	  if (++heartbeat_counter >= 50)   // 50 * 10ms = 500ms toggle
-	  	    {
-	  	        HAL_GPIO_TogglePin(STATUS_LED_GPIO_Port, STATUS_LED_Pin);
-	  	        heartbeat_counter = 0;
-	  	    }
+	      if (++heartbeat_counter >= 50)
+	      {
+	          HAL_GPIO_TogglePin(STATUS_LED_GPIO_Port, STATUS_LED_Pin);
+	          heartbeat_counter = 0;
+	      }
 
-	  	    HAL_Delay(10);
+	      HAL_Delay(10);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -236,9 +254,9 @@ static void MX_ADC1_Init(void)
 
   /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
   */
-  sConfig.Channel = ADC_CHANNEL_5;
+  sConfig.Channel = ADC_CHANNEL_10;
   sConfig.Rank = 1;
-  sConfig.SamplingTime = ADC_SAMPLETIME_3CYCLES;
+  sConfig.SamplingTime = ADC_SAMPLETIME_15CYCLES;
   if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
   {
     Error_Handler();
