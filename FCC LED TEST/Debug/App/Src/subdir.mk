@@ -6,24 +6,21 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
 ../App/Src/can_driver.c \
-../App/Src/control_system.c \
-../App/Src/fan_control.c \
-../App/Src/pot_fan.c \
-../App/Src/sensor_inputs.c 
+../App/Src/ina236.c \
+../App/Src/motor_fan.c \
+../App/Src/pot_fan.c 
 
 OBJS += \
 ./App/Src/can_driver.o \
-./App/Src/control_system.o \
-./App/Src/fan_control.o \
-./App/Src/pot_fan.o \
-./App/Src/sensor_inputs.o 
+./App/Src/ina236.o \
+./App/Src/motor_fan.o \
+./App/Src/pot_fan.o 
 
 C_DEPS += \
 ./App/Src/can_driver.d \
-./App/Src/control_system.d \
-./App/Src/fan_control.d \
-./App/Src/pot_fan.d \
-./App/Src/sensor_inputs.d 
+./App/Src/ina236.d \
+./App/Src/motor_fan.d \
+./App/Src/pot_fan.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
@@ -33,7 +30,7 @@ App/Src/%.o App/Src/%.su App/Src/%.cyclo: ../App/Src/%.c App/Src/subdir.mk
 clean: clean-App-2f-Src
 
 clean-App-2f-Src:
-	-$(RM) ./App/Src/can_driver.cyclo ./App/Src/can_driver.d ./App/Src/can_driver.o ./App/Src/can_driver.su ./App/Src/control_system.cyclo ./App/Src/control_system.d ./App/Src/control_system.o ./App/Src/control_system.su ./App/Src/fan_control.cyclo ./App/Src/fan_control.d ./App/Src/fan_control.o ./App/Src/fan_control.su ./App/Src/pot_fan.cyclo ./App/Src/pot_fan.d ./App/Src/pot_fan.o ./App/Src/pot_fan.su ./App/Src/sensor_inputs.cyclo ./App/Src/sensor_inputs.d ./App/Src/sensor_inputs.o ./App/Src/sensor_inputs.su
+	-$(RM) ./App/Src/can_driver.cyclo ./App/Src/can_driver.d ./App/Src/can_driver.o ./App/Src/can_driver.su ./App/Src/ina236.cyclo ./App/Src/ina236.d ./App/Src/ina236.o ./App/Src/ina236.su ./App/Src/motor_fan.cyclo ./App/Src/motor_fan.d ./App/Src/motor_fan.o ./App/Src/motor_fan.su ./App/Src/pot_fan.cyclo ./App/Src/pot_fan.d ./App/Src/pot_fan.o ./App/Src/pot_fan.su
 
 .PHONY: clean-App-2f-Src
 

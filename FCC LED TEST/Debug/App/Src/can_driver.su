@@ -1,7 +1,0 @@
-../App/Src/can_driver.c:19:19:CAN_InitDriver	16	static
-../App/Src/can_driver.c:37:6:CAN_16Bit_Deserializer	24	static
-../App/Src/can_driver.c:54:6:CAN_N_Byte_Serializer	32	static
-../App/Src/can_driver.c:88:19:CAN_Transmit1	24	static
-../App/Src/can_driver.c:105:19:CAN_Transmit2	24	static
-../App/Src/can_driver.c:122:19:CAN_Receive1	16	static
-../App/Src/can_driver.c:140:6:CAN_Test	4	static

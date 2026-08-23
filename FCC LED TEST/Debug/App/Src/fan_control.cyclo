@@ -1,3 +1,0 @@
-../App/Src/fan_control.c:7:6:FanControl_Reset	1
-../App/Src/fan_control.c:13:6:FanControl_ShouldEnableCooling	3
-../App/Src/fan_control.c:29:5:FanControl_GetLastTemperature	1

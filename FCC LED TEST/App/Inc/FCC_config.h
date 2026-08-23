@@ -41,25 +41,21 @@
 #define FCC_CAN_ID_TACH           0x444u
 #define FCC_CAN_ID_POWER          0x445u
 
-// Pressure sensors
-#define FCC_PRESSURE_SENSOR_COUNT 4u
+// Motor temp CAN message (DAQ), same 4x16-bit format as FCC_CAN_ID_SEG_TEMP
+#define FCC_CAN_ID_MOTOR_TEMP      0x446u
+#define MOTOR_TEMP_CAN_TIMEOUT_MS  200u    // fail-safe trip if no msg for this long
 
-#define FCC_PRESS_PIN1_ADC_CH         1u
-#define FCC_PRESS_PIN2_ADC_CH         2u
-#define FCC_PRESS_PIN3_ADC_CH         3u
-#define FCC_PRESS_PIN4_ADC_CH         4u
-// Temperature sensors
-#define FCC_TEMP_SENSOR_COUNT     4u
+// Fan curve
+#define MOTOR_FAN_TEMP_FLOOR_C     30.0f   // below this: idle duty
+#define MOTOR_FAN_TEMP_CEILING_C   70.0f   // above this: 100%
+#define MOTOR_FAN_TEMP_HYST_C       3.0f   // hysteresis band at each edge
+#define MOTOR_FAN_MIN_DUTY           0.20f // idle duty (0.0 if you want fans fully off when cold)
 
-#define FCC_TEMP_TIN1_ADC_CH         5u
-#define FCC_TEMP_TIN2_ADC_CH         6u
-#define FCC_TEMP_TIN3_ADC_CH         7u
-#define FCC_TEMP_TIN4_ADC_CH         8u
-
-// Control thresholds
-#define FCC_TEMP_THRESHOLD1_DEGC  40.0f
-#define FCC_TEMP_THRESHOLD2_DEGC  60.0f
-#define FCC_TEMP_HYSTERESIS_DEGC  3.0f
+// INA236 power monitor (switch circuit current/voltage/power)
+#define INA236_I2C_ADDR            (0x40 << 1)   // A1=GND, A0=GND -> 0x40, HAL wants 8-bit
+#define INA236_SHUNT_OHMS          0.003f
+#define INA236_MAX_EXPECTED_A      100.0f        // <-- confirm/adjust this
+#define INA236_I2C_TIMEOUT_MS      10u           // bounded, never block main loop indefinitely
 
 #define FCC_NUM_SEG_TEMPS         4u
 

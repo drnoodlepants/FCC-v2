@@ -1,8 +1,0 @@
-../App/Src/control_system.c:18:14:Highest_Input_Temp	3
-../App/Src/control_system.c:34:14:Highest_Seg_Temp	3
-../App/Src/control_system.c:49:6:CAN_TransmitAll_SensorData	4
-../App/Src/control_system.c:89:6:CAN_Transmit_PowerConsumption	2
-../App/Src/control_system.c:121:6:Set_SwitchEnable	2
-../App/Src/control_system.c:141:6:Toggle_Status_LEDs	3
-../App/Src/control_system.c:155:13:FCC_OverCurrent_Handler	1
-../App/Src/control_system.c:165:6:FCC_Control_Loop	12
