@@ -27,7 +27,6 @@
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
 #include "pot_fan.h"
-#include "motor_fan.h"
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -52,8 +51,10 @@ TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim14;
 
 /* USER CODE BEGIN PV */
-static MotorFan_t motor_fan;
+static PotFan_t pf;
+
 static uint16_t heartbeat_counter = 0;
+
 static uint32_t debug_led_last_toggle = 0;
 
 /* USER CODE END PV */
@@ -125,9 +126,6 @@ int main(void)
   MX_TIM1_Init();
   MX_TIM14_Init();
   /* USER CODE BEGIN 2 */
-
-  MotorFan_Init(&motor_fan, &hcan1);
-  /*
   HAL_StatusTypeDef init_status  = PotFan_Init(&pf, &hadc1, &htim1);
   HAL_StatusTypeDef start_status = PotFan_Start(&pf);
 
@@ -151,29 +149,23 @@ int main(void)
       }
       while (1) {}
   }
-*/
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	 // PotFan_Update(&pf);
-	  DebugLED_UpdateBlink(&motor_fan);
+	  PotFan_Update(&pf);
+	      DebugLED_UpdateBlink(&pf);
 
-      MotorFan_Poll(&motor_fan);
+	      if (++heartbeat_counter >= 50)
+	      {
+	          HAL_GPIO_TogglePin(STATUS_LED_GPIO_Port, STATUS_LED_Pin);
+	          heartbeat_counter = 0;
+	      }
 
-      float duty = MotorFan_GetDuty(&motor_fan);
-      __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3,
-                             (uint32_t)(duty * (float)PWM_RESOLUTION));
-
-      if (++heartbeat_counter >= 50)
-      {
-          HAL_GPIO_TogglePin(STATUS_LED_GPIO_Port, STATUS_LED_Pin);
-          heartbeat_counter = 0;
-      }
-
-      HAL_Delay(10);
+	      HAL_Delay(10);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

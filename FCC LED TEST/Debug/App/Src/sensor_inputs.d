@@ -1,4 +1,5 @@
-App/Src/ina236.o: ../App/Src/ina236.c ../App/Inc/ina236.h \
+App/Src/sensor_inputs.o: ../App/Src/sensor_inputs.c \
+ ../App/Inc/sensor_inputs.h ../App/Inc/can_driver.h \
  ../App/Inc/FCC_config.h ../Core/Inc/main.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
  ../Core/Inc/stm32f4xx_hal_conf.h \
@@ -31,7 +32,8 @@ App/Src/ina236.o: ../App/Src/ina236.c ../App/Inc/ina236.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
-../App/Inc/ina236.h:
+../App/Inc/sensor_inputs.h:
+../App/Inc/can_driver.h:
 ../App/Inc/FCC_config.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:

@@ -1,4 +1,5 @@
-App/Src/motor_fan.o: ../App/Src/motor_fan.c ../App/Inc/motor_fan.h \
+App/Src/control_system.o: ../App/Src/control_system.c \
+ ../App/Inc/control_system.h ../App/Inc/can_driver.h \
  ../App/Inc/FCC_config.h ../Core/Inc/main.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
  ../Core/Inc/stm32f4xx_hal_conf.h \
@@ -31,8 +32,9 @@ App/Src/motor_fan.o: ../App/Src/motor_fan.c ../App/Inc/motor_fan.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h \
- ../App/Inc/can_driver.h
-../App/Inc/motor_fan.h:
+ ../App/Inc/sensor_inputs.h
+../App/Inc/control_system.h:
+../App/Inc/can_driver.h:
 ../App/Inc/FCC_config.h:
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
@@ -66,4 +68,4 @@ App/Src/motor_fan.o: ../App/Src/motor_fan.c ../App/Inc/motor_fan.h \
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h:
-../App/Inc/can_driver.h:
+../App/Inc/sensor_inputs.h:
