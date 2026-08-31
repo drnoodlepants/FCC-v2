@@ -26,7 +26,6 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-#include "pot_fan.h"
 #include "motor_fan.h"
 /* USER CODE END PTD */
 
@@ -68,7 +67,7 @@ static void MX_CAN2_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_TIM14_Init(void);
 /* USER CODE BEGIN PFP */
-static void DebugLED_UpdateBlink(PotFan_t *pf);
+static void DebugLED_UpdateBlink(MotorFan_t *mf);
 
 /* USER CODE END PFP */
 
