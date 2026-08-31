@@ -27,6 +27,11 @@ typedef struct {
 
 void  MotorFan_Init(MotorFan_t *mf, CAN_HandleTypeDef *hcan);
 
+// Consolidated startup: configures the CAN RX filter, starts the CAN
+// peripheral, and starts PWM output on the given timer/channel. Call once
+// after MotorFan_Init(), before entering the main loop.
+HAL_StatusTypeDef MotorFan_Start(MotorFan_t *mf, TIM_HandleTypeDef *htim);
+
 // Call every loop iteration. Non-blocking: checks FIFO once, consumes at most
 // one frame, and updates the stale/fail-safe flag against HAL_GetTick().
 void  MotorFan_Poll(MotorFan_t *mf);
