@@ -139,38 +139,13 @@ if (MotorFan_Start(&motor_fan, &htim1) != HAL_OK)
     }
     while (1) {}
 }
-  /*
-  HAL_StatusTypeDef init_status  = PotFan_Init(&pf, &hadc1, &htim1);
-  HAL_StatusTypeDef start_status = PotFan_Start(&pf);
-
-  if (init_status != HAL_OK)
-  {
-      for (int i = 0; i < 2; i++) {
-          HAL_GPIO_TogglePin(STATUS_LED_GPIO_Port, STATUS_LED_Pin);
-          HAL_Delay(100);
-          HAL_GPIO_TogglePin(STATUS_LED_GPIO_Port, STATUS_LED_Pin);
-          HAL_Delay(100);
-      }
-      while (1) {}
-  }
- if (start_status != HAL_OK)
-  {
-      for (int i = 0; i < 4; i++) {
-          HAL_GPIO_TogglePin(STATUS_LED_GPIO_Port, STATUS_LED_Pin);
-          HAL_Delay(1000);
-          HAL_GPIO_TogglePin(STATUS_LED_GPIO_Port, STATUS_LED_Pin);
-          HAL_Delay(100);
-      }
-      while (1) {}
-  }
-*/
+ 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	 // PotFan_Update(&pf);
 	  DebugLED_UpdateBlink(&motor_fan);
 
       MotorFan_Poll(&motor_fan);
