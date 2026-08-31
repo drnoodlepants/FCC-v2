@@ -74,11 +74,12 @@ static void DebugLED_UpdateBlink(PotFan_t *pf);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-static void DebugLED_UpdateBlink(PotFan_t *pf)
+static void DebugLED_UpdateBlink(MotorFan_t *mf)
 {
-    // Further the pot is turned, the faster the debug LED blinks.
+    // Faster the fan needs to spin, the faster the debug LED blinks.
+    float duty = MotorFan_GetDuty(mf);
     uint32_t period_ms = DEBUG_LED_PERIOD_MAX_MS -
-        (uint32_t)(pf->pot_fraction * (float)(DEBUG_LED_PERIOD_MAX_MS - DEBUG_LED_PERIOD_MIN_MS));
+        (uint32_t)(duty * (float)(DEBUG_LED_PERIOD_MAX_MS - DEBUG_LED_PERIOD_MIN_MS));
 
     uint32_t now = HAL_GetTick();
     if ((now - debug_led_last_toggle) >= period_ms)
