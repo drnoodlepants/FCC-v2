@@ -30,6 +30,43 @@ void MotorFan_Init(MotorFan_t *mf, CAN_HandleTypeDef *hcan)
     mf->state        = FAN_STATE_IDLE;
 }
 
+HAL_StatusTypeDef MotorFan_Start(MotorFan_t *mf, TIM_HandleTypeDef *htim)
+{
+    CAN_FilterTypeDef filter = {0};
+
+    // Catch-all for now (mask 0x0000) - open item to tighten this to
+    // FCC_CAN_ID_MOTOR_TEMP (0x446) once other nodes are active on the bus.
+    filter.FilterIdHigh         = 0x0000;
+    filter.FilterIdLow          = 0x0000;
+    filter.FilterMaskIdHigh     = 0x0000;
+    filter.FilterMaskIdLow      = 0x0000;
+    filter.FilterFIFOAssignment = CAN_RX_FIFO0;
+    filter.FilterBank           = 0;
+    filter.FilterMode           = CAN_FILTERMODE_IDMASK;
+    filter.FilterScale          = CAN_FILTERSCALE_32BIT;
+    filter.FilterActivation     = CAN_FILTER_ENABLE;
+    filter.SlaveStartFilterBank = 14;
+
+    if (HAL_CAN_ConfigFilter(mf->hcan, &filter) != HAL_OK)
+    {
+        return HAL_ERROR;
+    }
+
+    if (HAL_CAN_Start(mf->hcan) != HAL_OK)
+    {
+        return HAL_ERROR;
+    }
+
+    // Only TIM_CHANNEL_3 is configured in MX_TIM1_Init() - starting other
+    // channels here would return HAL_ERROR and silently skip this one.
+    if (HAL_TIM_PWM_Start(htim, TIM_CHANNEL_3) != HAL_OK)
+    {
+        return HAL_ERROR;
+    }
+
+    return HAL_OK;
+}
+
 void MotorFan_Poll(MotorFan_t *mf)
 {
     // Non-blocking: only touch the FIFO if something's actually waiting.
