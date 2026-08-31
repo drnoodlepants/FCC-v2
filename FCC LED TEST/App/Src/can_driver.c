@@ -19,10 +19,18 @@ extern CAN_HandleTypeDef hcan2;
 HAL_StatusTypeDef CAN_InitDriver(CAN_Driver_t *can) {
     if (!can) return HAL_ERROR;
     if (hcan1.Instance == NULL || hcan2.Instance == NULL) return HAL_ERROR;
+
     can->hcan1 = &hcan1;
     can->hcan2 = &hcan2;
-    //can->is_ready_to_read = false;
-    return  HAL_CAN_Start(can->hcan1) || HAL_CAN_Start(can->hcan2);
+
+    if (HAL_CAN_Start(can->hcan1) != HAL_OK) {
+        return HAL_ERROR;
+    }
+    if (HAL_CAN_Start(can->hcan2) != HAL_OK) {
+        return HAL_ERROR;
+    }
+
+    return HAL_OK;
 }
 
 
