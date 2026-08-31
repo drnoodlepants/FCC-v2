@@ -126,7 +126,18 @@ int main(void)
   MX_TIM14_Init();
   /* USER CODE BEGIN 2 */
 
-  MotorFan_Init(&motor_fan, &hcan1);
+MotorFan_Init(&motor_fan, &hcan1);
+
+if (MotorFan_Start(&motor_fan, &htim1) != HAL_OK)
+{
+    for (int i = 0; i < 2; i++) {
+        HAL_GPIO_TogglePin(STATUS_LED_GPIO_Port, STATUS_LED_Pin);
+        HAL_Delay(100);
+        HAL_GPIO_TogglePin(STATUS_LED_GPIO_Port, STATUS_LED_Pin);
+        HAL_Delay(100);
+    }
+    while (1) {}
+}
   /*
   HAL_StatusTypeDef init_status  = PotFan_Init(&pf, &hadc1, &htim1);
   HAL_StatusTypeDef start_status = PotFan_Start(&pf);
