@@ -78,11 +78,9 @@ void MotorFan_Poll(MotorFan_t *mf)
         if (HAL_CAN_GetRxMessage(mf->hcan, CAN_RX_FIFO0, &rx_header, rx_data) == HAL_OK
             && rx_header.StdId == FCC_CAN_ID_MOTOR_TEMP)
         {
-            uint16_t deserialized[FCC_NUM_SEG_TEMPS] = {0};
-            CAN_16Bit_Deserializer(deserialized, rx_data);
-
-            // Adjust index if the DAQ puts motor temp somewhere other than [0]
-            mf->last_temp_c  = (float)deserialized[0];
+            uint16_t deserialized[4] = {0};
+CAN_16Bit_Deserializer(deserialized, rx_data);
+mf->last_temp_c = (float)deserialized[0];
             mf->last_rx_tick = HAL_GetTick();
             mf->link_stale   = false;
         }
