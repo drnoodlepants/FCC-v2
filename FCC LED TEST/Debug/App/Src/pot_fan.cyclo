@@ -1,0 +1,4 @@
+../App/Src/pot_fan.c:10:21:Constrain	3
+../App/Src/pot_fan.c:18:19:PotFan_Init	5
+../App/Src/pot_fan.c:35:19:PotFan_Start	6
+../App/Src/pot_fan.c:52:6:PotFan_Update	3

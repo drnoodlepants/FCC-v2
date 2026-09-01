@@ -1,0 +1,4 @@
+../App/Src/pot_fan.c:10:21:Constrain	24	static
+../App/Src/pot_fan.c:18:19:PotFan_Init	32	static
+../App/Src/pot_fan.c:35:19:PotFan_Start	16	static
+../App/Src/pot_fan.c:52:6:PotFan_Update	24	static

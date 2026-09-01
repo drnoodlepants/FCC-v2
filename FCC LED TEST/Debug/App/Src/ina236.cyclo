@@ -1,0 +1,4 @@
+../App/Src/ina236.c:11:26:INA236_WriteReg	1
+../App/Src/ina236.c:18:26:INA236_ReadReg	2
+../App/Src/ina236.c:28:19:INA236_Init	7
+../App/Src/ina236.c:60:19:INA236_Update	6

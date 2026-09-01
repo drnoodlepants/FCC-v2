@@ -1,0 +1,4 @@
+../App/Src/ina236.c:11:26:INA236_WriteReg	40	static
+../App/Src/ina236.c:18:26:INA236_ReadReg	48	static
+../App/Src/ina236.c:28:19:INA236_Init	32	static
+../App/Src/ina236.c:60:19:INA236_Update	24	static
