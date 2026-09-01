@@ -98,7 +98,7 @@ float MotorFan_GetDuty(MotorFan_t *mf)
 {
     if (mf->link_stale)
     {
-        // Lost the DAQ - don't guess. Run cooling flat out until comms return.
+        // Lost the DAQ. Run cooling at 100% until comms return.
         return 1.0f;
     }
 
