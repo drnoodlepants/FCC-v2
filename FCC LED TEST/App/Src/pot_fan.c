@@ -49,13 +49,31 @@ HAL_StatusTypeDef PotFan_Start(PotFan_t *pf)
     return HAL_OK;
 }
 
-void PotFan_Update(PotFan_t *pf)
+/*void PotFan_Update(PotFan_t *pf)
 {
     if (!pf || !pf->pwm_tim) return;
 
     uint16_t raw = pf->adc_raw[ADC_IDX_POT];
     const float adc_max = (float)((1u << ADC_RES_BITS) - 1u);
-    pf->pot_fraction = Constrain((float)raw / adc_max, 0.0f, 1.0f);
+    pf->pot_fraction = Constrain((float)raw / adc_max, 0.0f, 0.8f);
+    pf->pwm_compare = (uint32_t)(pf->pot_fraction * (float)PWM_RESOLUTION);
+
+    __HAL_TIM_SET_COMPARE(pf->pwm_tim, TIM_CHANNEL_3, pf->pwm_compare);
+}*/
+
+void PotFan_Update(PotFan_t *pf)
+{
+    if (!pf || !pf->pwm_tim) return;
+
+    // 1. Read raw ADC value and clamp it to valid ADC hardware range [0, 1]
+    uint16_t raw = pf->adc_raw[ADC_IDX_POT];
+    const float adc_max = (float)((1u << ADC_RES_BITS) - 1u);
+    float normalized_adc = Constrain((float)raw / adc_max, 0.0f, 1.0f);
+
+    // 2. Linear map: 0.0–1.0 knob rotation maps to 0.0–0.8 (0–80% duty cycle)
+    pf->pot_fraction = normalized_adc * 0.8f;
+
+    // 3. Scale directly to timer ARR compare register
     pf->pwm_compare = (uint32_t)(pf->pot_fraction * (float)PWM_RESOLUTION);
 
     __HAL_TIM_SET_COMPARE(pf->pwm_tim, TIM_CHANNEL_3, pf->pwm_compare);

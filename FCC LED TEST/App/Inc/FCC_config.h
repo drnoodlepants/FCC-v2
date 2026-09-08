@@ -31,7 +31,7 @@
 #define STATUS_LED4                (uint16_t)0x1000
 #define STATUS_LED5                (uint16_t)0x2000
 
-#define PWM_RESOLUTION        65535u
+#define PWM_RESOLUTION        639u
 
 // CAN IDs
 #define FCC_CAN_ID_BASE           0x440u
@@ -60,6 +60,8 @@
 #define FCC_TEMP_THRESHOLD1_DEGC  40.0f
 #define FCC_TEMP_THRESHOLD2_DEGC  60.0f
 #define FCC_TEMP_HYSTERESIS_DEGC  3.0f
+
+#define MOTOR_FAN_MIN_DUTY           0.20f // idle duty (0.0 if you want fans fully off when cold)
 
 #define FCC_NUM_SEG_TEMPS         4u
 
