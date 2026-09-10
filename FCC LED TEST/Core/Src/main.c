@@ -27,6 +27,12 @@
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
 #include "motor_fan.h"
+#include "can_driver.h"
+
+// Set to 1 to accept any CAN ID on bus 1 and toggle DEBUG_LED on every
+// received frame (bench validation without a DAQ/PDM on the bus yet).
+// Set to 0 for the real 0x446-only filter + thermal control path.
+#define CAN_TEST_MODE 1
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -51,7 +57,9 @@ TIM_HandleTypeDef htim1;
 TIM_HandleTypeDef htim14;
 
 /* USER CODE BEGIN PV */
-static MotorFan_t motor_fan;
+static CAN_Driver_t can_drv;
+static MotorFan_t   motor_fan;
+
 static uint16_t heartbeat_counter = 0;
 static uint32_t debug_led_last_toggle = 0;
 
@@ -67,7 +75,7 @@ static void MX_CAN2_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_TIM14_Init(void);
 /* USER CODE BEGIN PFP */
-static void DebugLED_UpdateBlink(MotorFan_t *mf);
+//atic void DebugLED_UpdateBlink(MotorFan_t *mf);
 
 /* USER CODE END PFP */
 
@@ -126,40 +134,74 @@ int main(void)
   MX_TIM14_Init();
   /* USER CODE BEGIN 2 */
 
-MotorFan_Init(&motor_fan, &hcan1);
+  if (CAN_InitDriver(&can_drv) != HAL_OK)
+  {
+      Error_Handler();
+  }
 
-if (MotorFan_Start(&motor_fan, &htim1) != HAL_OK)
-{
-    for (int i = 0; i < 2; i++) {
-        HAL_GPIO_TogglePin(STATUS_LED_GPIO_Port, STATUS_LED_Pin);
-        HAL_Delay(100);
-        HAL_GPIO_TogglePin(STATUS_LED_GPIO_Port, STATUS_LED_Pin);
-        HAL_Delay(100);
-    }
-    while (1) {}
-}
- 
+#if CAN_TEST_MODE
+  if (CAN_ConfigCatchAllFilter(can_drv.hcan1) != HAL_OK)
+  {
+      Error_Handler();
+  }
+#else
+  if (CAN_ConfigMotorTempFilter(can_drv.hcan1) != HAL_OK)
+  {
+      Error_Handler();
+  }
+#endif
+
+  MotorFan_Init(&motor_fan);
+
+  if (HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3) != HAL_OK)
+  {
+      for (int i = 0; i < 2; i++) {
+          HAL_GPIO_TogglePin(STATUS_LED_GPIO_Port, STATUS_LED_Pin);
+          HAL_Delay(1000);
+          HAL_GPIO_TogglePin(STATUS_LED_GPIO_Port, STATUS_LED_Pin);
+          HAL_Delay(100);
+      }
+      while (1) {}
+  }
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	  DebugLED_UpdateBlink(&motor_fan);
+	  CAN_RxStatus_t rx_status = CAN_Receive1(&can_drv);
 
-      MotorFan_Poll(&motor_fan);
+	  #if CAN_TEST_MODE
+	        // Any frame at all - toggle immediately, ignore ID/content.
+	        if (rx_status == CAN_RX_OK || rx_status == CAN_RX_WRONG_ID)
+	        {
+	            HAL_GPIO_TogglePin(DEBUG_LED_GPIO_Port, DEBUG_LED_Pin);
+	        }
+#else
+	        if (rx_status == CAN_RX_OK){
+	        {
+	            uint16_t deserialized[4] = {0};
+	            CAN_16Bit_Deserializer(deserialized, can_drv.rx_data);
+	            MotorFan_UpdateTemp(&motor_fan, (float)deserialized[0]);
+	        }
+	        MotorFan_CheckStale(&motor_fan);
 
-      float duty = MotorFan_GetDuty(&motor_fan);
-      __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3,
-                             (uint32_t)(duty * (float)PWM_RESOLUTION));
+	        float duty = MotorFan_GetDuty(&motor_fan);
+	        __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3,
+	                               (uint32_t)(duty * (float)PWM_RESOLUTION));
 
-      if (++heartbeat_counter >= 50)
-      {
-          HAL_GPIO_TogglePin(STATUS_LED_GPIO_Port, STATUS_LED_Pin);
-          heartbeat_counter = 0;
-      }
+	        DebugLED_UpdateBlink(&motor_fan);
+	        }
+	  #endif
 
-      HAL_Delay(10);
+	        if (++heartbeat_counter >= 500)
+	        {
+	            HAL_GPIO_TogglePin(STATUS_LED_GPIO_Port, STATUS_LED_Pin);
+	            heartbeat_counter = 0;
+	        }
+
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

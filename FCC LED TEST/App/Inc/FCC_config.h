@@ -31,7 +31,7 @@
 #define STATUS_LED4                (uint16_t)0x1000
 #define STATUS_LED5                (uint16_t)0x2000
 
-#define PWM_RESOLUTION        65535u
+#define PWM_RESOLUTION        639u
 
 // CAN IDs
 #define FCC_CAN_ID_BASE           0x440u

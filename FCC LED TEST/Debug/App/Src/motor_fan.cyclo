@@ -1,6 +1,5 @@
 ../App/Src/motor_fan.c:11:21:Constrain	3
 ../App/Src/motor_fan.c:17:21:Linear_Map	2
 ../App/Src/motor_fan.c:24:6:MotorFan_Init	1
-../App/Src/motor_fan.c:33:19:MotorFan_Start	7
-../App/Src/motor_fan.c:62:6:MotorFan_Poll	5
-../App/Src/motor_fan.c:93:7:MotorFan_GetDuty	12
+../App/Src/motor_fan.c:32:6:MotorFan_UpdateTemp	1
+../App/Src/motor_fan.c:39:7:MotorFan_GetDuty	12

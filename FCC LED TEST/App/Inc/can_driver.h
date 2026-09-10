@@ -12,17 +12,19 @@ extern "C" {
 #endif
 
 #include "FCC_config.h"
+#include "stm32f4xx_hal.h"
 
+extern CAN_HandleTypeDef hcan;
 
 /**
  * @brief Check error status of can receive for debugging purposes.
  */
 typedef enum {
-	OK=0,                  	/**< OK */
-	FULL_RXFIFO=1,         	/**< FULL_RXFIFO */
-	_HAL_ERROR=2,           	/**< HAL_ERROR */
-	INVALID_SERIALIZATION=3	/**< INVALID_SERIALIZATION */
-} Receive_Status_t;
+    CAN_RX_OK = 0,
+    CAN_RX_EMPTY = 1,       // no frame waiting - not an error, just nothing to do
+    CAN_RX_HAL_ERROR = 2,
+    CAN_RX_WRONG_ID = 3     // frame received but not the one we filtered for
+} CAN_RxStatus_t;
 
 
 /**
@@ -40,9 +42,13 @@ typedef struct CAN_Driver_t {
 
 
 HAL_StatusTypeDef CAN_InitDriver(CAN_Driver_t *can);
+HAL_StatusTypeDef CAN_ConfigMotorTempFilter(CAN_HandleTypeDef *hcan);
+HAL_StatusTypeDef CAN_ConfigCatchAllFilter(CAN_HandleTypeDef *hcan);
+
 HAL_StatusTypeDef CAN_Transmit1	(CAN_Driver_t *can);
 HAL_StatusTypeDef CAN_Transmit2	(CAN_Driver_t *can);
-HAL_StatusTypeDef CAN_Receive1	(CAN_Driver_t *can);
+
+CAN_RxStatus_t    CAN_Receive1(CAN_Driver_t *can);
 
 //void CAN_16Bit_Serializer(float data_in, uint8_t output_buf[2]);
 void CAN_N_Byte_Serializer(uint8_t n, float data_in, uint8_t *output_buf);

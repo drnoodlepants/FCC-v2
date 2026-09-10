@@ -9,7 +9,6 @@
 #pragma once
 
 #include "FCC_config.h"
-#include "can_driver.h"
 
 typedef enum {
     FAN_STATE_IDLE,     // below floor - min duty
@@ -25,17 +24,14 @@ typedef struct {
     FanThermalState_t state;
 } MotorFan_t;
 
-void  MotorFan_Init(MotorFan_t *mf, CAN_HandleTypeDef *hcan);
+void  MotorFan_Init(MotorFan_t *mf);
 
-// Consolidated startup: configures the CAN RX filter, starts the CAN
-// peripheral, and starts PWM output on the given timer/channel. Call once
-// after MotorFan_Init(), before entering the main loop.
-HAL_StatusTypeDef MotorFan_Start(MotorFan_t *mf, TIM_HandleTypeDef *htim);
+// Call whenever a fresh temperature sample arrives (from CAN, bench test, whatever).
+void  MotorFan_UpdateTemp(MotorFan_t *mf, float temp_c);
 
-// Call every loop iteration. Non-blocking: checks FIFO once, consumes at most
-// one frame, and updates the stale/fail-safe flag against HAL_GetTick().
-void  MotorFan_Poll(MotorFan_t *mf);
+// Call every loop iteration regardless of whether a new CAN frame arrived -
+// re-arms link_stale if too much time has passed since the last update.
+void  MotorFan_CheckStale(MotorFan_t *mf);
 
-// Returns duty 0.0-1.0. If the CAN link is stale, fails safe to full duty
-// rather than guessing - better to over-cool than silently stop cooling.
+// Returns duty 0.0-1.0. Fails safe to full duty if link_stale.
 float MotorFan_GetDuty(MotorFan_t *mf);
