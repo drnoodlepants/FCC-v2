@@ -59,12 +59,13 @@ HAL_StatusTypeDef CAN_ConfigCatchAllFilter(CAN_HandleTypeDef *hcan)
 
 CAN_RxStatus_t CAN_Receive1(CAN_Driver_t *can)
 {
-    if (!can || !can->hcan1) return CAN_RX_HAL_ERROR;
 
-    if (HAL_CAN_GetRxFifoFillLevel(can->hcan1, CAN_RX_FIFO0) == 0)
+    if (!can || !can->hcan2) return CAN_RX_HAL_ERROR;
+
+    if (HAL_CAN_GetRxFifoFillLevel(can->hcan2, CAN_RX_FIFO0) == 0)
         return CAN_RX_EMPTY;   // non-blocking - nothing waiting this poll
 
-    if (HAL_CAN_GetRxMessage(can->hcan1, CAN_RX_FIFO0, &can->rx1, can->rx_data) != HAL_OK)
+    if (HAL_CAN_GetRxMessage(can->hcan2, CAN_RX_FIFO0, &can->rx1, can->rx_data) != HAL_OK)
         return CAN_RX_HAL_ERROR;
 
     if (can->rx1.StdId != FCC_CAN_ID_MOTOR_TEMP)
@@ -75,6 +76,7 @@ CAN_RxStatus_t CAN_Receive1(CAN_Driver_t *can)
 
 HAL_StatusTypeDef CAN_Transmit1(CAN_Driver_t *can)
 {
+
     uint32_t mbox;
     can->tx1.IDE   = CAN_ID_STD;
     can->tx1.RTR   = CAN_RTR_DATA;

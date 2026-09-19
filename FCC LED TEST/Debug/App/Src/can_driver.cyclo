@@ -2,7 +2,7 @@
 ../App/Src/can_driver.c:23:19:CAN_ConfigMotorTempFilter	1
 ../App/Src/can_driver.c:42:19:CAN_ConfigCatchAllFilter	1
 ../App/Src/can_driver.c:60:16:CAN_Receive1	6
-../App/Src/can_driver.c:76:19:CAN_Transmit1	1
-../App/Src/can_driver.c:86:19:CAN_Transmit2	1
-../App/Src/can_driver.c:96:6:CAN_16Bit_Deserializer	2
-../App/Src/can_driver.c:104:6:CAN_N_Byte_Serializer	5
+../App/Src/can_driver.c:77:19:CAN_Transmit1	1
+../App/Src/can_driver.c:88:19:CAN_Transmit2	1
+../App/Src/can_driver.c:98:6:CAN_16Bit_Deserializer	2
+../App/Src/can_driver.c:106:6:CAN_N_Byte_Serializer	5

@@ -39,6 +39,9 @@
 /* USER CODE BEGIN PD */
 #define DEBUG_LED_PERIOD_MIN_MS   80u    // blink speed at full pot deflection
 #define DEBUG_LED_PERIOD_MAX_MS   1000u  // blink speed at pot = 0
+
+#define TEST_TX_PERIOD_MS         500u   // how often to send the test frame
+#define TEST_TX_CAN_ID            0x123u // any ID - pick something you can spot on the injector
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -62,6 +65,9 @@ static MotorFan_t   motor_fan;
 
 static uint16_t heartbeat_counter = 0;
 static uint32_t debug_led_last_toggle = 0;
+
+static uint32_t test_tx_last_send = 0;
+static uint8_t  test_tx_counter = 0;   // increments each send so you can spot drops/order on a sniffer
 
 /* USER CODE END PV */
 
@@ -93,6 +99,23 @@ static void DebugLED_UpdateBlink(MotorFan_t *mf)
     {
         HAL_GPIO_TogglePin(DEBUG_LED_GPIO_Port, DEBUG_LED_Pin);
         debug_led_last_toggle = now;
+    }
+}
+
+static void TestTx_SendPeriodic(void)
+{
+    uint32_t now = HAL_GetTick();
+    if ((now - test_tx_last_send) < TEST_TX_PERIOD_MS) return;
+    test_tx_last_send = now;
+
+    can_drv.id  = TEST_TX_CAN_ID;
+    can_drv.len = 1;
+    can_drv.tx_data[0] = test_tx_counter++;
+
+    if (CAN_Transmit2(&can_drv) != HAL_OK)
+    {
+        // TX mailboxes full, or transmit failed - fine to ignore on the bench,
+        // but this is where you'd toggle a fault indicator if you wanted one.
     }
 }
 /* USER CODE END 0 */
@@ -170,14 +193,24 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+      TestTx_SendPeriodic();
+
 	  CAN_RxStatus_t rx_status = CAN_Receive1(&can_drv);
 
+
 	  #if CAN_TEST_MODE
-	        // Any frame at all - toggle immediately, ignore ID/content.
-	        if (rx_status == CAN_RX_OK || rx_status == CAN_RX_WRONG_ID)
-	        {
-	            HAL_GPIO_TogglePin(DEBUG_LED_GPIO_Port, DEBUG_LED_Pin);
-	        }
+      // Any frame at all - toggle immediately, ignore ID/content.
+      if (rx_status == CAN_RX_OK || rx_status == CAN_RX_WRONG_ID)
+      {
+          HAL_GPIO_TogglePin(DEBUG_LED_GPIO_Port, DEBUG_LED_Pin);
+
+          // Echo the received frame straight back out on CAN1.
+          can_drv.id  = can_drv.rx1.StdId;
+          can_drv.len = can_drv.rx1.DLC;
+          memcpy(can_drv.tx_data, can_drv.rx_data, can_drv.rx1.DLC);
+
+          CAN_Transmit1(&can_drv);
+      }
 #else
 	        if (rx_status == CAN_RX_OK){
 	        {
@@ -195,7 +228,7 @@ int main(void)
 	        }
 	  #endif
 
-	        if (++heartbeat_counter >= 500)
+	        if (++heartbeat_counter >= 50000)
 	        {
 	            HAL_GPIO_TogglePin(STATUS_LED_GPIO_Port, STATUS_LED_Pin);
 	            heartbeat_counter = 0;
@@ -319,11 +352,11 @@ static void MX_CAN1_Init(void)
 
   /* USER CODE END CAN1_Init 1 */
   hcan1.Instance = CAN1;
-  hcan1.Init.Prescaler = 16;
+  hcan1.Init.Prescaler = 2;
   hcan1.Init.Mode = CAN_MODE_NORMAL;
   hcan1.Init.SyncJumpWidth = CAN_SJW_1TQ;
-  hcan1.Init.TimeSeg1 = CAN_BS1_1TQ;
-  hcan1.Init.TimeSeg2 = CAN_BS2_1TQ;
+  hcan1.Init.TimeSeg1 = CAN_BS1_13TQ;
+  hcan1.Init.TimeSeg2 = CAN_BS2_2TQ;
   hcan1.Init.TimeTriggeredMode = DISABLE;
   hcan1.Init.AutoBusOff = DISABLE;
   hcan1.Init.AutoWakeUp = DISABLE;
@@ -356,11 +389,11 @@ static void MX_CAN2_Init(void)
 
   /* USER CODE END CAN2_Init 1 */
   hcan2.Instance = CAN2;
-  hcan2.Init.Prescaler = 16;
+  hcan2.Init.Prescaler = 2;
   hcan2.Init.Mode = CAN_MODE_NORMAL;
   hcan2.Init.SyncJumpWidth = CAN_SJW_1TQ;
-  hcan2.Init.TimeSeg1 = CAN_BS1_1TQ;
-  hcan2.Init.TimeSeg2 = CAN_BS2_1TQ;
+  hcan2.Init.TimeSeg1 = CAN_BS1_13TQ;
+  hcan2.Init.TimeSeg2 = CAN_BS2_2TQ;
   hcan2.Init.TimeTriggeredMode = DISABLE;
   hcan2.Init.AutoBusOff = DISABLE;
   hcan2.Init.AutoWakeUp = DISABLE;
